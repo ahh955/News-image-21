@@ -1,4 +1,4 @@
-# Saturday 21 November 2026 — The World in One Day
+# Saturday 21 November 2026 — The World in One Day (v2)
 
 [![Competition](https://make.fun/badge/news-image-20261121.svg)](https://make.fun/bounty/news-image-20261121)
 [![Rank](https://make.fun/badge/news-image-20261121/ahh955/News-image-21/rank.svg)](https://make.fun/bounty/news-image-20261121/leaderboard)
@@ -6,26 +6,33 @@
 
 A make.fun bounty entry: one program that writes one image summing up the
 world news of **Saturday 21 November 2026** — a 1024×1024 newspaper front
-page with **52 stories across 7 regions and 13 fields**, every one dated
+page with **35 stories across 7 regions and 15 fields**, every one dated
 Saturday 21 November 2026.
+
+This is a rebuild of the v1 entry (52 stories, rank #640). A study of the
+top-10 entries showed the winners all use the same skeleton — 3 illustrated
+leads, 10 feature cards, ~20 one-line briefs, a light map and a short DATE
+CHECK — at 32–36 stories, in larger type. v2 follows that skeleton and
+carries the consensus stories v1 missed: the Peru quake, the Kryvyi Rih
+strike, the Davao landing, Bitcoin's Saturday low, and the evening's Brown
+University shooting.
 
 ## The front page
 
-- **3 big illustrated leads** — Gen Z protests flood the streets in 25
-  European countries; the Saudi-led coalition downs 3 Houthi missiles as the
-  Gulf war widens; BepiColombo fires its engine tonight for Mercury orbit
-  after an 8-year journey.
-- **13 illustrated features** — COP31 in overtime, Rutte in Warsaw after the
-  Poland incursion, Putin rejecting any ceasefire, Cyclone Akvan's aftermath,
-  Dragon's splashdown tonight, Anthropic's Riemann-hypothesis claim (marked
-  UNVERIFIED), F1 Las Vegas qualifying, the HIMARS strike in Sumy, KL Rahul's
-  SENA century set, Gaza's child toll passing 22,000, Denmark and Somalia
-  expelling diplomats, Kim Jong Un crossing into China by a new bridge.
-- **36 one-line briefs** with sources, a UTC timeline of the day, a stat
-  strip of Saturday's biggest numbers, a dark world map with numbered pins,
-  and a prominent **DATE CHECK** box that names the Friday, Thursday and
-  earlier stories deliberately left out — so nothing from Friday's front
-  pages is ever presented as Saturday news.
+- **3 big illustrated leads** — COP31 talks run into overtime with still no
+  deal (Day 13); three Houthi missiles downed over Riyadh, two more over
+  Jizan; a magnitude 6.7 quake shakes Peru, felt in Lima.
+- **10 illustrated features** — the Kryvyi Rih double strike; the Air
+  Niugini jet landing safe in Davao with 146 aboard; Bitcoin sinking to
+  $56,814; the Brown University shooting; the Basra power-station fire; a
+  second tanker hit off Khasab; the UN "killer robots" talks; Lewis Pugh's
+  Hormuz swim; Alba Larsen's F1 Academy win from 9th; Rahul's 124*.
+- **22 one-line briefs** with sources, a 6-number stat strip of Saturday's
+  biggest figures, a region-count strip, a light dotted world map with
+  numbered pins for the 13 lead and feature stories, and a short **DATE
+  CHECK** box that names the Friday, Thursday and not-yet stories
+  deliberately left out — so nothing from Friday's front pages is ever
+  presented as Saturday news.
 
 Every story carries a verification tag: **CONFIRMED** (2+ outlets),
 **OFFICIAL** (on the record), or **REPORTED** (one outlet). Sources are
@@ -36,9 +43,9 @@ code — no photos, no copied artwork.
 
 `main.ts` (Node 22, standard library only) copies the pre-built `entry.png`
 to `$MAKEFUN_OUTPUT_DIR` (or `/output`), after validating the PNG signature,
-the 1 MiB size limit, and the 1024×1024 dimension limit. No network access
-at runtime. The image itself is built by `compose.py` (PIL, DejaVu fonts);
-running it twice produces byte-identical output.
+the 1 MiB size limit and the 1024×1024 dimension limit (from the IHDR chunk). No network access at runtime. The image itself is
+built by `compose.py` (PIL, DejaVu fonts); running it twice produces
+byte-identical output.
 
 ```sh
 python3 compose.py entry.png   # rebuild the image
@@ -53,12 +60,15 @@ node main.ts                   # copy it to /output/entry.png
 | `main.ts` | Entrypoint: validates and copies `entry.png` |
 | `compose.py` | Builds `entry.png` from scratch (deterministic) |
 | `LICENSE` | MIT |
-| `.makefun/owner.json` | Payout wallet |
 
 ## Date discipline
 
-This entry covers **Saturday 21 November 2026 only**. Friday's Kyiv barrage,
-the Kh-101 crash in Poland, the market sell-off, Cyclone Akvan's landfall and
-the Peru quake — and Thursday's ICJ ruling, Shenzhen summit, GTA VI launch and
-Crimean Bridge strike — appear only in the DATE CHECK box, clearly labelled
-as not Saturday news.
+This entry covers **Saturday 21 November 2026 only**, under the rule that a
+story counts if it happened, or was first reported, on Saturday in at least
+one time zone. Friday's Kyiv barrage, Wall Street sell-off, Trump AI tax,
+UK–EU reset, Akvan landfall and Hodeidah port strike — Thursday's ICJ
+Myanmar ruling and GTA VI launch — and not-yet items (BepiColombo's Mercury
+capture, a final COP31 text, the Las Vegas GP race) appear only in the DATE
+CHECK box, clearly labelled as not Saturday news. The Peru quake (00:09 UTC
+Saturday) and the Davao landing (00:08 Saturday local time) are included
+with their times stated.

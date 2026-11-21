@@ -1,45 +1,46 @@
-// main.ts — make.fun bounty entry: news-image-20261121.
-// Copies the pre-built entry.png (a 1024x1024 newspaper front page summing up
-// the world news of Saturday 21 November 2026) to the output directory.
-// Node 22, standard library only. No network access at runtime.
-import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+// news-image-20261121 v2 entrypoint (Node 22, standard library only).
+//
+// Copies the pre-built entry.png beside this file to the output directory:
+// $MAKEFUN_OUTPUT_DIR when set (local runs), /output inside the grader.
+// Before copying it checks the PNG signature, the 1 MiB size limit and the
+// 1024x1024 dimension limit (read from the IHDR chunk), so a corrupt,
+// oversized or over-dimensioned image fails loudly instead of entering the
+// heat. No network access at runtime; both runs write the same bytes.
+//
+// Run it with:  mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-const HERE = dirname(fileURLToPath(import.meta.url));
-const SRC = join(HERE, "entry.png");
-const OUT_DIR = process.env.MAKEFUN_OUTPUT_DIR || "/output";
-const DEST = join(OUT_DIR, "entry.png");
-const MAX_BYTES = 1024 * 1024; // 1 MiB
+import { copyFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-function fail(message: string): never {
-  console.error(`error: ${message}`);
-  process.exit(1);
+const PNG_SIGNATURE = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+]);
+const MAX_BYTES = 1048576; // 1 MiB
+const MAX_DIMENSION = 1024;
+
+const here = dirname(fileURLToPath(import.meta.url));
+const src = join(here, 'entry.png');
+const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const dest = join(outDir, 'entry.png');
+
+const buf = readFileSync(src);
+if (!buf.subarray(0, 8).equals(PNG_SIGNATURE)) {
+  throw new Error('entry.png is not a PNG file');
 }
-
-const buf = readFileSync(SRC);
-
 if (buf.length > MAX_BYTES) {
-  fail(`entry.png is ${buf.length} bytes, over the 1 MiB limit`);
+  throw new Error(`entry.png is ${buf.length} bytes, over the 1 MiB limit`);
 }
-
-// PNG signature: 89 50 4E 47 0D 0A 1A 0A
-const PNG_SIG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-if (buf.length < 33 || !buf.subarray(0, 8).equals(PNG_SIG)) {
-  fail("entry.png: missing or invalid PNG signature");
-}
-
-// First chunk must be IHDR: 4-byte length (13) at offset 8, chunk type "IHDR"
-// at offset 12, then width/height as big-endian uint32 at offsets 16 and 20.
-if (buf.readUInt32BE(8) !== 13 || buf.subarray(12, 16).toString("ascii") !== "IHDR") {
-  fail("entry.png: first chunk is not a valid IHDR");
+// IHDR chunk: length (4) + "IHDR" (4) + width (4, BE) + height (4, BE).
+if (buf.length < 24 || buf.toString('ascii', 12, 16) !== 'IHDR') {
+  throw new Error('entry.png has no IHDR chunk');
 }
 const width = buf.readUInt32BE(16);
 const height = buf.readUInt32BE(20);
-if (width > 1024 || height > 1024) {
-  fail(`entry.png is ${width}x${height}, larger than the 1024x1024 limit`);
+if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+  throw new Error(`entry.png is ${width}x${height}, over the 1024x1024 limit`);
 }
 
-mkdirSync(OUT_DIR, { recursive: true });
-copyFileSync(SRC, DEST);
-console.log(`wrote ${DEST} (${buf.length} bytes, ${width}x${height})`);
+mkdirSync(outDir, { recursive: true });
+copyFileSync(src, dest);
+console.log(`wrote ${dest} (${buf.length} bytes)`);
