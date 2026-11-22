@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""news-image-20261121 v3 entrypoint (Python 3, standard library only).
+"""news-image-20261121 v4 entrypoint (Python 3, standard library only).
 
 Copies the pre-built entry.png beside this file to the output directory:
 $MAKEFUN_OUTPUT_DIR when set (local runs), /output inside the grader.
